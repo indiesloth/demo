@@ -45,8 +45,9 @@ public class UserController {
       return ResponseEntity.ok().body(responseUserDTO);
     } catch (Exception e) {
       // 유저 정보는 항상 하나이므로 리스트로 만들어야 하는 ResponseDTO를 사용하지 않고 그냥 UserDTO 리턴.
-
-      ResponseDTO responseDTO = ResponseDTO.builder().error(e.getMessage()).build();
+      ResponseDTO<?> responseDTO = ResponseDTO.builder()
+          .error(e.getMessage())
+          .build();
       return ResponseEntity
           .badRequest()
           .body(responseDTO);
@@ -61,6 +62,7 @@ public class UserController {
         passwordEncoder);
 
     if (user != null) {
+      // 토큰 생성
       final String token = tokenProvider.create(user);
       final UserDTO responseUserDTO = UserDTO.builder()
           .username(user.getUsername())
@@ -69,7 +71,7 @@ public class UserController {
           .build();
       return ResponseEntity.ok().body(responseUserDTO);
     } else {
-      ResponseDTO responseDTO = ResponseDTO.builder()
+      ResponseDTO<?> responseDTO = ResponseDTO.builder()
           .error("Login failed.")
           .build();
       return ResponseEntity
